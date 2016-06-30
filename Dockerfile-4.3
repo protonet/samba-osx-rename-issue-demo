@@ -1,0 +1,12 @@
+FROM ubuntu:xenial
+
+RUN apt-get update && apt-get install -y samba wget
+ADD smb.conf /etc/samba/smb.conf
+
+# Used for correct signal processing
+RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 && \
+      chmod +x /usr/local/bin/dumb-init
+
+RUN smbpasswd -an nobody
+
+ENTRYPOINT ["dumb-init", "/usr/sbin/smbd", "-F", "-S"]
